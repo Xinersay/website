@@ -1,0 +1,175 @@
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de Probabilités</title>
+</head>
+<body>
+    <h1>Calculateur de probabilités de match de football</h1>
+
+    <label for="equipe1">Nom de l'équipe à domicile :</label>
+    <input type="text" id="equipe1" placeholder="Équipe 1"><br>
+
+    <label for="equipe2">Nom de l'équipe à l'extérieur :</label>
+    <input type="text" id="equipe2" placeholder="Équipe 2"><br>
+
+    <button onclick="showGoalQuestions()">Continuer</button>
+
+    <div id="goalQuestions" style="display: none;">
+        <p><h2>Entrez les informations suivantes :</h2></p>
+
+        <label for="butDomicile">Total de but(s) marqué(s) à domicile par <span id="equipe1Label"></span> :</label>
+        <input type="number" id="butDomicile"><br>
+
+        <label for="butExterieur">Total de but(s) concédé(s) à l'extérieur par <span id="equipe2Label"></span> :</label>
+        <input type="number" id="butExterieur"><br>
+
+        <label for="butExterieur2">Total de but(s) marqué(s) à l'extérieur par <span id="equipe2Label2"></span> :</label>
+        <input type="number" id="butExterieur2"><br>
+
+        <label for="butDomicile2">Total de but(s) concédé(s) à domicile par <span id="equipe1Label2"></span> :</label>
+        <input type="number" id="butDomicile2"><br>
+
+        <button onclick="calculateProbabilities()">Calculer les Probabilités</button>
+    </div>
+
+    <div id="infoRecommendation" style="display: none;">
+        <p>Si vous rencontrez des difficultés à trouver les informations demandées, je vous recommande ce site : <a href="https://footystats.org/fr/france/ligue-1#" target="_blank">footystats.org</a>
+        (saison : 2022/2023 > Stats détaillées > Tableaux extérieur & domicile)</p>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        function showGoalQuestions() {
+            const equipe1 = document.getElementById("equipe1").value;
+            const equipe2 = document.getElementById("equipe2").value;
+            document.getElementById("equipe1Label").textContent = equipe1;
+            document.getElementById("equipe2Label").textContent = equipe2;
+            document.getElementById("equipe2Label2").textContent = equipe2;
+            document.getElementById("equipe1Label2").textContent = equipe1;
+            document.getElementById("goalQuestions").style.display = "block";
+            document.getElementById("infoRecommendation").style.display = "block"; // Afficher la phrase de recommandation
+        }
+
+                function calculatePoissonProb(a, b) {
+            const poissonProbs = [];
+            for (let x = 0; x < 7; x++) {
+                const prob = (Math.exp(-a) * (Math.pow(a, x))) / factorial(x);
+                poissonProbs.push(prob);
+            }
+            return poissonProbs;
+        }
+
+        function factorial(n) {
+            if (n === 0) return 1;
+            return n * factorial(n - 1);
+        }
+
+        function calculateProbabilities() {
+            const equipe1 = document.getElementById("equipe1").value;
+            const equipe2 = document.getElementById("equipe2").value;
+            const butDomicile = parseFloat(document.getElementById("butDomicile").value);
+            const butExterieur = parseFloat(document.getElementById("butExterieur").value);
+            const butExterieur2 = parseFloat(document.getElementById("butExterieur2").value);
+            const butDomicile2 = parseFloat(document.getElementById("butDomicile2").value);
+
+            const formula1Result = ((butDomicile / 19) / (566 / 380)) * (butExterieur / 19);
+            const formula2Result = ((butExterieur2 / 19) / (501 / 380)) * (butDomicile2 / 19);
+
+            const probsEquipe1 = calculatePoissonProb(formula1Result, formula2Result);
+            const probsEquipe2 = calculatePoissonProb(formula2Result, formula1Result);
+
+            const maxScoreLength = Math.max(...Array.from({ length: 7 }, (_, i) => `${i} but${i > 1 ? 's' : ''}`.length));
+            const maxResultsLength = Math.max(...Array.from({ length: 7 }, (_, j) =>
+                Math.max(...Array.from({ length: 7 }, (_, i) => `${i} - ${j} : ${i > j ? equipe1 : (j > i ? equipe2 : 'Match nul')} gagne`.length))
+            ));
+
+            let output = `<h2>Probabilités de score pour ${equipe1} :</h2>`;
+            for (let i = 0; i < probsEquipe1.length; i++) {
+            const s = i > 1 ? 's' : '';
+            const prefix = `${i} but${s}`.padEnd(maxScoreLength);
+            const percentage = (probsEquipe1[i] * 100).toFixed(2);
+            output += `<li>${prefix} : ${percentage} %</li>`;
+        }
+
+        output += `</ul><h2>Probabilités de score pour ${equipe2} :</h2><ul>`;
+
+        for (let i = 0; i < probsEquipe2.length; i++) {
+            const s = i > 1 ? 's' : '';
+            const prefix = `${i} but${s}`.padEnd(maxScoreLength);
+            const percentage = (probsEquipe2[i] * 100).toFixed(2);
+            output += `<li>${prefix} : ${percentage} %</li>`;
+        }
+
+        output += `</ul><h2>Probabilités des scores :</h2><ul>`;
+
+        const scoresProbs = [];
+
+        for (let i = 0; i < 7; i++) {
+            for (let j = 0; j < 7; j++) {
+                const prob = probsEquipe1[i] * probsEquipe2[j];
+                scoresProbs.push([i, j, prob]);
+            }
+        }
+
+        const maxPercentageLength = Math.max(...scoresProbs.map(([i, j, prob]) => (`${(prob * 100).toFixed(2)}%`.length)));
+
+        for (let i = 0; i < 7; i++) {
+            for (let j = 0; j < 7; j++) {
+                const winner = i > j ? equipe1 : (j > i ? equipe2 : "Match nul");
+                const winnerStr = winner === "Match nul" ? "Match nul" : `${winner} gagne`;
+                const prefix = `${i} - ${j} : ${winnerStr}`.padEnd(maxResultsLength);
+                const percentageStr = `(${(scoresProbs[i * 7 + j][2] * 100).toFixed(2)}%)`.padStart(maxPercentageLength);
+                output += `<li>${prefix} ${percentageStr}</li>`;
+            }
+        }
+
+        output += `</ul><h2>Scores les plus probables :</h2><ul>`;
+
+        const filteredScores = scoresProbs.filter(([i, j, prob]) => prob > 0.05);
+        filteredScores.sort((a, b) => b[2] - a[2]);
+
+        for (const [i, j, prob] of filteredScores) {
+            const winner = i > j ? equipe1 : (j > i ? equipe2 : "Match nul");
+            const winnerStr = winner === "Match nul" ? "Match nul" : `${winner} gagne`;
+            const prefix = `${i} - ${j} : ${winnerStr}`.padEnd(maxResultsLength);
+            const percentageStr = `(${(prob * 100).toFixed(2)}%)`.padStart(maxPercentageLength);
+            output += `<li>${prefix} ${percentageStr}</li>`;
+        }
+
+        output += `</ul><h2>Probabilités du match :</h2><ul>`;
+
+        const totalProbs49 = scoresProbs.reduce((total, [i, j, prob]) => total + prob, 0);
+        const totalProbsMatch = [0, 0, 0]; // [équipe 1 gagne, match nul, équipe 2 gagne]
+
+        for (let j = 0; j < 7; j++) {
+            for (let i = 0; i < 7; i++) {
+                const winner = i > j ? equipe1 : (j > i ? equipe2 : "Match nul");
+                if (winner === equipe1) {
+                    totalProbsMatch[0] += scoresProbs[i * 7 + j][2];
+                } else if (winner === equipe2) {
+                    totalProbsMatch[2] += scoresProbs[i * 7 + j][2];
+                } else {
+                    totalProbsMatch[1] += scoresProbs[i * 7 + j][2];
+                }
+            }
+        }
+
+        const maxLabelLength = Math.max(...["Équipe 1 gagne", "Match nul", "Équipe 2 gagne"].map(label => label.length));
+
+        for (let idx = 0; idx < 3; idx++) {
+            const label = idx === 0 ? `${equipe1} gagne` : (idx === 1 ? "Match nul" : `${equipe2} gagne`);
+            const newPercentage = totalProbsMatch[idx] * (100 / totalProbs49);
+            const percentageStr = `${newPercentage.toFixed(2)}%`.padStart(maxPercentageLength);
+            output += `<li>${label.padEnd(maxLabelLength)} : ${percentageStr}</li>`;
+        }
+
+        output += `</ul>`;
+        document.getElementById("results").innerHTML = output;
+    }
+    </script>
+</body>
+</html>
