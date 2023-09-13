@@ -5,35 +5,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculateur de Probabilités</title>
+
+<style>
+    .questions-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .question {
+        width: 50%;
+        box-sizing: border-box;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .insertion-line {
+        width: 100%;
+        text-align: center;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+</style>
 </head>
 <body>
-    <h1>Calculateur de probabilités de match de football</h1>
+    <h1 style="text-align: center;">Calculateur de probabilités de match de football</h1>
 
+    <div style="text-align: center;">
     <label for="equipe1">Nom de l'équipe à domicile :</label>
-    <input type="text" id="equipe1" placeholder="Équipe 1"><br>
+    <input type="text" id="equipe1" placeholder=""><br>
+</div>
 
-    <label for="equipe2">Nom de l'équipe à l'extérieur :</label>
-    <input type="text" id="equipe2" placeholder="Équipe 2"><br>
+    <div style="text-align: center;"><label for="equipe2">Nom de l'équipe à l'extérieur :</label>
+    <input type="text" id="equipe2" placeholder=""><br>
 
+    <br>
     <button onclick="showGoalQuestions()">Continuer</button>
 
     <div id="goalQuestions" style="display: none;">
-        <p><h2>Entrez les informations suivantes :</h2></p>
+        <p><h2 style="text-align: center;">Entrez les informations suivantes :</h2></p>
 
-        <label for="butDomicile">Total de but(s) marqué(s) à domicile par <span id="equipe1Label"></span> :</label>
-        <input type="number" id="butDomicile"><br>
+<div class="questions-container">
+    <ul>
+        <li>
+            <label for="butDomicile">Total de but(s) marqué(s) à domicile par <span id="equipe1Label"></span> :</label>
+            <input type="number" id="butDomicile">
+        </li>
 
-        <label for="butExterieur">Total de but(s) concédé(s) à l'extérieur par <span id="equipe2Label"></span> :</label>
-        <input type="number" id="butExterieur"><br>
+        <li>
+            <label for="butExterieur">Total de but(s) concédé(s) à l'extérieur par <span id="equipe2Label"></span> :</label>
+            <input type="number" id="butExterieur">
+        </li>
 
-        <label for="butExterieur2">Total de but(s) marqué(s) à l'extérieur par <span id="equipe2Label2"></span> :</label>
-        <input type="number" id="butExterieur2"><br>
+        <li>
+            <label for="butExterieur2">Total de but(s) marqué(s) à l'extérieur par <span id="equipe2Label2"></span> :</label>
+            <input type="number" id="butExterieur2">
+        </li>
 
-        <label for="butDomicile2">Total de but(s) concédé(s) à domicile par <span id="equipe1Label2"></span> :</label>
-        <input type="number" id="butDomicile2"><br>
-
+        <li>
+            <label for="butDomicile2">Total de but(s) concédé(s) à domicile par <span id="equipe1Label2"></span> :</label>
+            <input type="number" id="butDomicile2">
+        </li>
+    </ul>
+    <div class="insertion-line">
         <button onclick="calculateProbabilities()">Calculer les Probabilités</button>
     </div>
+</div>
 
     <div id="infoRecommendation" style="display: none;">
         <p>Si vous rencontrez des difficultés à trouver les informations demandées, je vous recommande ce site : <a href="https://footystats.org/fr/france/ligue-1#" target="_blank">footystats.org</a>
@@ -51,7 +91,7 @@
             document.getElementById("equipe2Label2").textContent = equipe2;
             document.getElementById("equipe1Label2").textContent = equipe1;
             document.getElementById("goalQuestions").style.display = "block";
-            document.getElementById("infoRecommendation").style.display = "block"; // Afficher la phrase de recommandation
+            document.getElementById("infoRecommendation").style.display = "block";
         }
 
                 function calculatePoissonProb(a, b) {
@@ -87,13 +127,20 @@
                 Math.max(...Array.from({ length: 7 }, (_, i) => `${i} - ${j} : ${i > j ? equipe1 : (j > i ? equipe2 : 'Match nul')} gagne`.length))
             ));
 
-            let output = `<h2>Probabilités de score pour ${equipe1} :</h2>`;
-            for (let i = 0; i < probsEquipe1.length; i++) {
-            const s = i > 1 ? 's' : '';
-            const prefix = `${i} but${s}`.padEnd(maxScoreLength);
-            const percentage = (probsEquipe1[i] * 100).toFixed(2);
-            output += `<li>${prefix} : ${percentage} %</li>`;
-        }
+            let output = `<h2>Probabilités de score pour ${equipe1} :</h2><ul>`;
+
+for (let i = 0; i < probsEquipe1.length; i++) {
+    const s = i > 1 ? 's' : '';
+    const prefix = `${i} but${s}`.padEnd(maxScoreLength);
+    const percentage = (probsEquipe1[i] * 100).toFixed(2);
+    const line = `<li>${prefix} : ${percentage} %</li>`;
+    if (line.startsWith('• ')) {
+        output += line.substring(2);
+    } else {
+    } output += `<li>•  ${prefix} : ${percentage} %</li>`;
+}
+
+output += `</ul>`;
 
         output += `</ul><h2>Probabilités de score pour ${equipe2} :</h2><ul>`;
 
@@ -101,7 +148,7 @@
             const s = i > 1 ? 's' : '';
             const prefix = `${i} but${s}`.padEnd(maxScoreLength);
             const percentage = (probsEquipe2[i] * 100).toFixed(2);
-            output += `<li>${prefix} : ${percentage} %</li>`;
+            output += `<li>•  ${prefix} : ${percentage} %</li>`;
         }
 
         output += `</ul><h2>Probabilités des scores :</h2><ul>`;
@@ -123,7 +170,7 @@
                 const winnerStr = winner === "Match nul" ? "Match nul" : `${winner} gagne`;
                 const prefix = `${i} - ${j} : ${winnerStr}`.padEnd(maxResultsLength);
                 const percentageStr = `(${(scoresProbs[i * 7 + j][2] * 100).toFixed(2)}%)`.padStart(maxPercentageLength);
-                output += `<li>${prefix} ${percentageStr}</li>`;
+                output += `<li>•  ${prefix} ${percentageStr}</li>`;
             }
         }
 
@@ -137,13 +184,13 @@
             const winnerStr = winner === "Match nul" ? "Match nul" : `${winner} gagne`;
             const prefix = `${i} - ${j} : ${winnerStr}`.padEnd(maxResultsLength);
             const percentageStr = `(${(prob * 100).toFixed(2)}%)`.padStart(maxPercentageLength);
-            output += `<li>${prefix} ${percentageStr}</li>`;
+            output += `<li>•  ${prefix} ${percentageStr}</li>`;
         }
 
         output += `</ul><h2>Probabilités du match :</h2><ul>`;
 
         const totalProbs49 = scoresProbs.reduce((total, [i, j, prob]) => total + prob, 0);
-        const totalProbsMatch = [0, 0, 0]; // [équipe 1 gagne, match nul, équipe 2 gagne]
+        const totalProbsMatch = [0, 0, 0];
 
         for (let j = 0; j < 7; j++) {
             for (let i = 0; i < 7; i++) {
@@ -164,12 +211,19 @@
             const label = idx === 0 ? `${equipe1} gagne` : (idx === 1 ? "Match nul" : `${equipe2} gagne`);
             const newPercentage = totalProbsMatch[idx] * (100 / totalProbs49);
             const percentageStr = `${newPercentage.toFixed(2)}%`.padStart(maxPercentageLength);
-            output += `<li>${label.padEnd(maxLabelLength)} : ${percentageStr}</li>`;
+            output += `<li>•  ${label.padEnd(maxLabelLength)} : ${percentageStr}</li>`;
         }
 
         output += `</ul>`;
         document.getElementById("results").innerHTML = output;
     }
     </script>
+</div>
+<footer style="text-align: center;">
+    <br>
+    <br>
+    <p>Version 1.1</p>
+    <p>By Xinersay</p>
+</footer>
 </body>
 </html>
