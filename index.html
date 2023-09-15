@@ -11,14 +11,25 @@
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
-    }
-
-    .question {
-        width: 50%;
-        box-sizing: border-box;
-        padding: 10px;
+        background-color: #ffffff;
+        border-radius: 15px;
         text-align: center;
     }
+
+.question {
+    width: 50%;
+    box-sizing: border-box;
+    padding: 10px;
+    text-align: center;
+    margin: 10px;
+}
+
+.question-container {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
 
     .insertion-line {
         width: 100%;
@@ -29,45 +40,79 @@
         list-style-type: none;
         padding: 0;
     }
+
+body {
+    background-color: #B9D9EB;
+}
 </style>
 </head>
 <body>
+    <div class="question-container">
     <h1 style="text-align: center;">Calculateur de probabilités de match de football</h1>
+    </div>
 
+    <div class="question-container"
     <div style="text-align: center;">
     <label for="equipe1">Nom de l'équipe à domicile :</label>
     <input type="text" id="equipe1" placeholder=""><br>
-</div>
 
-    <div style="text-align: center;"><label for="equipe2">Nom de l'équipe à l'extérieur :</label>
+    <div style="text-align: center;">
+      <br>
+      <label for="equipe2">Nom de l'équipe à l'extérieur :</label>
     <input type="text" id="equipe2" placeholder=""><br>
+    </div>
 
     <br>
     <button onclick="showGoalQuestions()">Continuer</button>
+    </div>
 
+    <div class="question-container"
     <div id="goalQuestions" style="display: none;">
         <p><h2 style="text-align: center;">Entrez les informations suivantes :</h2></p>
 
 <div class="questions-container">
     <ul>
         <li>
-            <label for="butDomicile">Total de but(s) marqué(s) à domicile par <span id="equipe1Label"></span> :</label>
-            <input type="number" id="butDomicile">
+            <div style="text-align: center;">
+            <label for="butDomicile">Total de but(s) marqué(s)
+            <br>
+            à domicile par <span id="equipe1Label"></span> :
+            <br>
+            </label><input type="number" id="butDomicile">
+        </div>
         </li>
 
         <li>
-            <label for="butExterieur">Total de but(s) concédé(s) à l'extérieur par <span id="equipe2Label"></span> :</label>
-            <input type="number" id="butExterieur">
+            <br>
+            <div style="text-align: center;">
+            <label for="butExterieur">Total de but(s) concédé(s)
+            <br>
+            à l'extérieur par <span id="equipe2Label"></span> :
+            <br>
+            </label><input type="number" id="butExterieur">
+        </div>
         </li>
 
         <li>
-            <label for="butExterieur2">Total de but(s) marqué(s) à l'extérieur par <span id="equipe2Label2"></span> :</label>
-            <input type="number" id="butExterieur2">
+            <br>
+            <div style="text-align: center;">
+            <label for="butExterieur2">Total de but(s) marqué(s)
+            <br>
+            à l'extérieur par <span id="equipe2Label2"></span> :
+            <br>
+            </label><input type="number" id="butExterieur2">
+        <br>
         </li>
 
         <li>
-            <label for="butDomicile2">Total de but(s) concédé(s) à domicile par <span id="equipe1Label2"></span> :</label>
-            <input type="number" id="butDomicile2">
+            <br>
+            <div style="text-align: center;">
+            <label for="butDomicile2">Total de but(s) concédé(s)
+            <br>
+            à domicile par <span id="equipe1Label2"></span> :
+            <br>
+            </label><input type="number" id="butDomicile2">
+        </div>
         </li>
     </ul>
     <div class="insertion-line">
@@ -76,8 +121,12 @@
 </div>
 
     <div id="infoRecommendation" style="display: none;">
+        <br>
+        <div style="text-align: center;">
         <p>Si vous rencontrez des difficultés à trouver les informations demandées, je vous recommande ce site : <a href="https://footystats.org/fr/france/ligue-1#" target="_blank">footystats.org</a>
         (saison : 2022/2023 > Stats détaillées > Tableaux extérieur & domicile)</p>
+    </div>
+    </div>
     </div>
 
     <div id="results"></div>
@@ -127,7 +176,9 @@
                 Math.max(...Array.from({ length: 7 }, (_, i) => `${i} - ${j} : ${i > j ? equipe1 : (j > i ? equipe2 : 'Match nul')} gagne`.length))
             ));
 
-            let output = `<h2>Probabilités de score pour ${equipe1} :</h2><ul>`;
+            let output = `<h2>Probabilités de
+            <br>
+            score pour ${equipe1} :</h2><ul>`;
 
 for (let i = 0; i < probsEquipe1.length; i++) {
     const s = i > 1 ? 's' : '';
@@ -142,7 +193,9 @@ for (let i = 0; i < probsEquipe1.length; i++) {
 
 output += `</ul>`;
 
-        output += `</ul><h2>Probabilités de score pour ${equipe2} :</h2><ul>`;
+        output += `</ul><h2>Probabilités de
+        <br>
+        score pour ${equipe2} :</h2><ul>`;
 
         for (let i = 0; i < probsEquipe2.length; i++) {
             const s = i > 1 ? 's' : '';
@@ -215,14 +268,17 @@ output += `</ul>`;
         }
 
         output += `</ul>`;
-        document.getElementById("results").innerHTML = output;
+document.getElementById("results-container").innerHTML = output;
     }
     </script>
+</div>
+<div class="questions-container">
+    <div id="results-container"></div>
 </div>
 <footer style="text-align: center;">
     <br>
     <br>
-    <p>Version 1.1</p>
+    <p>Version 1.2</p>
     <p>By Xinersay</p>
 </footer>
 </body>
