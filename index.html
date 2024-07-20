@@ -169,7 +169,7 @@ body {
             const butDomicile2 = parseFloat(document.getElementById("butDomicile2").value);
 
             const formula1Result = ((butDomicile / 17) / (443 / 306)) * (butExterieur / 17);
-            const formula2Result = ((butExterieur2 / 17) / (501 / 306)) * (butDomicile2 / 17);
+            const formula2Result = ((butExterieur2 / 17) / (383 / 306)) * (butDomicile2 / 17);
 
             const probsEquipe1 = calculatePoissonProb(formula1Result, formula2Result);
             const probsEquipe2 = calculatePoissonProb(formula2Result, formula1Result);
